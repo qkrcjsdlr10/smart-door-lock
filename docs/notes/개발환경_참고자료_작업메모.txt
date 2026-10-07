@@ -1,0 +1,149 @@
+SmartDoor 개발 환경 · 참고 자료 · 작업 메모
+
+정리일: 2026-10-07
+기존 '새 폴더/새 텍스트 문서.txt'의 내용을 주제별로 정리했습니다.
+과거 환경과 작업 계획을 포함하며 링크와 실행 절차는 재검증하지 않았습니다.
+현재 파일 구성 및 진행 상태는 루트 README.md를 참고합니다.
+
+1. 역할 분담 및 과거 작업 계획
+
+- 하드웨어 담당: 서버, DB, 하드웨어
+- 인식 담당: 얼굴 검출 및 이미지 저장
+- 분류 담당: 얼굴 특징값 비교
+
+기존 계획:
+- 재료 주문 및 프로그램 기본 구조 작성
+- GitHub 버전 관리
+- OpenCV 검출 결과를 얼굴 분류 코드로 전달
+
+개인 계정명과 과거 저장소 초대 링크는 공개용 정리 과정에서 제거했습니다.
+
+2. 개발 환경 기록
+
+- IDE: PyCharm
+- 환경 관리: Anaconda
+- Python: 원문에는 3.6으로 기록
+- 라즈베리파이 OS: 라즈비안 GUI
+- 이미지 처리: OpenCV
+- 얼굴 특징값 추출 및 비교: face_recognition
+
+원문 다운로드 링크는 Python 3.3.3 페이지로 메모의 3.6과 다릅니다.
+https://www.python.org/downloads/release/python-333/
+
+PyCharm 및 Anaconda:
+https://toward-the-future.tistory.com/entry/Python-파이참Pycharm-설치-및-아나콘다anaconda-가상환경-연동하기
+
+OpenCV 설치:
+https://jow1025.tistory.com/276
+
+3. Docker 환경 설정 기록
+
+과거 메모의 순서이며 현재 프로젝트에 Dockerfile이 제공된다는 의미는 아닙니다.
+
+WSL2:
+https://www.lainyzine.com/ko/article/how-to-install-wsl2-and-use-linux-on-windows-10/
+https://javaworld.co.kr/131
+https://docs.microsoft.com/ko-kr/windows/wsl/install
+
+Docker:
+https://docs.docker.com/desktop/windows/install/
+
+face_recognition 및 Docker 자료:
+https://github.com/ageitgey/face_recognition
+https://github.com/ageitgey/face_recognition/tree/master/docker
+https://hub.docker.com/r/animcogn/face_recognition
+
+Dockerfile이 있는 디렉터리에서 이미지 생성:
+docker build . -t face
+
+컨테이너 실행 및 포트 연결:
+docker run -d -p 8888:8888 face
+
+Jupyter가 실행되는 경우 컨테이너 로그의 접속 주소 확인.
+과거 로그 예시: Jupyter Server 1.17.0
+과거 주소 예시: http://localhost:8888/lab
+위 주소는 현재 접속 주소가 아닙니다.
+
+컨테이너에 root 사용자로 접속하는 과거 명령어:
+docker exec -i -t --user root {컨테이너이름} bash
+
+추가 참고:
+https://makernambo.com/154
+
+4. 얼굴 검출 · 얼굴인식 · 분류 참고 자료
+
+얼굴 검출 예제:
+https://blog.naver.com/roboholic84/222356993529
+
+얼굴인식 및 등록:
+https://ukayzm.github.io/python-face-recognition/
+
+미등록 얼굴 분류 및 샘플:
+https://ukayzm.github.io/unknown-face-classifier/
+원문 샘플 코드명: face_classifier.py
+원문 이미지 예시명: 20220606_151247.444-0.png
+
+관련 GitHub 자료:
+https://github.com/seriousran/face-recognition
+https://github.com/ageitgey/face_recognition/blob/master/README_Korean.md
+https://github.com/SeonSangWon/Face-Recognition
+https://github.com/jaehee22/faceLock
+
+기타 개발 참고:
+https://uiandwe.tistory.com/1215
+https://foss4g.tistory.com/1502
+https://thecodingnote.tistory.com/8
+https://webnautes.tistory.com/1278
+https://mingyum119.tistory.com/m/99
+
+5. 라즈베리파이 경로 설정 기록
+
+다음은 과거 장치 경로이며 현재 파일 위치에 맞춘 설정이 아닙니다.
+
+얼굴 Cascade 경로:
+cascade_fn = args.get('--cascade', '/home/<user>/Downloads/smartdoor/src/opencv/data/haarcascades/haarcascade_frontalcatface.xml')
+
+위 파일명은 고양이 얼굴용 Cascade입니다.
+일반 얼굴 검출 실험 파일은 haarcascade_frontalface_alt.xml을 사용합니다.
+
+눈 Cascade 경로:
+nested_fn = args.get('--nested-cascade', '/home/<user>/Downloads/smartdoor/src/opencv/data/haarcascades/haarcascade_eye.xml')
+
+Fallback 데이터 경로:
+cam = create_capture(video_src, fallback='synth:bg={}:noise=0.05'.format(cv.samples.findFile('/home/<user>/Downloads/smartdoor/src/opencv/samples/data/lena.jpg')))
+
+로컬 저장:
+cv.imwrite('self camera test1.jpg', vis)
+
+저장 대상은 얼굴만 자른 이미지가 아닌 전체 프레임입니다.
+실행 시 현재 작업 디렉터리에 같은 파일명으로 덮어씁니다.
+담당 기능 확인 파일: archive/experiments/facedetect_10_13.py
+
+6. 현재 자료 위치
+
+현재 기준 코드: src/
+개별 실험 코드: archive/experiments/
+
+이전 프로젝트 사본:
+- archive/versions/door/
+- archive/versions/smartdoor/
+- archive/versions/SmartDoor-master_(11.24)/
+
+개인정보를 제거한 압축파일:
+- archive/packages/SmartDoor-master_(11.24).zip
+- archive/packages/smartdoor10_20.zip
+- archive/packages/smartdoor_1117.zip
+
+원문에 추가로 언급된 압축 이름:
+- SmartDoor-master.zip
+- SmartDoor-master(09.22).zip.zip)
+위 두 파일은 현재 제공된 파일 목록에서 확인되지 않았습니다.
+
+발표자료: docs/presentations/
+익명화한 보고서 본문:
+- docs/reports/얼굴 인식 기술을 이용한 스마트 도어락 시스템 구현.txt
+- docs/reports/얼굴인식.txt
+
+HWP 원본은 개인정보 제거를 위해 삭제하고 본문만 TXT로 보존했습니다.
+7z 원본은 내부 사진·작성자 정보·캐시 제거 후 ZIP으로 대체했습니다.
+발표자료에서도 얼굴 사진·이름·작성자 정보·미리보기를 제거했습니다.
